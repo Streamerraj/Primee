@@ -1,4 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TG_@Cricmatchstream</title>
+<meta name="referrer" content="no-referrer">
+
+<script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Segoe UI',Roboto,Arial,sans-serif}
+
+.shaka-video-container{
+position:fixed;inset:0;background:#000;
+display:flex;align-items:center;justify-content:center;
+}
+video{width:100%;height:100%;object-fit:contain;background:#000}
+
+.custom-watermark{
+position:absolute;z-index:40;pointer-events:none;
+top:65%;left:6%;transform:translateY(-50%);
+font-size:11px;font-weight:600;color:rgba(255,255,255,.12);
+}
+
+.block-overlay{
+position:fixed;inset:0;z-index:99999;display:flex;
+align-items:center;justify-content:center;
+background:radial-gradient(circle at center,#1a1a1a,#000);
+text-align:center;
+}
+.block-box{
+padding:40px;max-width:500px;width:90%;
+background:rgba(20,20,20,.95);border-radius:16px;
+border:1px solid rgba(255,255,255,.1);
+box-shadow:0 20px 50px rgba(0,0,0,.5);
+animation:fadeInUp .6s ease-out;
+}
+@keyframes fadeInUp{
+from{opacity:0;transform:translateY(30px)}
+to{opacity:1;transform:translateY(0)}
+}
+.block-title{
+font-size:42px;font-weight:800;color:#fff;
+text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;
+}
+.block-sub{font-size:14px;color:rgba(255,255,255,.6);line-height:1.6}
+
+/* Telegram popup */
+.telegram-overlay{
+position:fixed;inset:0;z-index:100000;
+display:none;align-items:center;justify-content:center;
+padding:20px;background:rgba(0,0,0,.82);
+}
+.telegram-overlay.show{display:flex}
+.telegram-box{
+width:100%;max-width:340px;padding:28px 22px;
+text-align:center;background:#151515;color:#fff;
+border:1px solid #303030;border-radius:18px;
+box-shadow:0 15px 45px rgba(0,0,0,.6);
+}
+.telegram-icon{
+width:58px;height:58px;margin:0 auto 15px;
+border-radius:50%;background:#229ED9;color:white;
+display:flex;align-items:center;justify-content:center;
+font-size:29px;font-weight:bold;
+}
+.telegram-box h2{font-size:22px;margin-bottom:10px}
+.telegram-box p{
+font-size:14px;color:#bbb;line-height:1.5;margin-bottom:20px;
+}
+.telegram-btn{
+display:block;width:100%;padding:13px 10px;
+border:0;border-radius:9px;background:#229ED9;color:#fff;
+font-size:15px;font-weight:700;text-decoration:none;
+cursor:pointer;margin-bottom:12px;
+}
+.telegram-close{
+width:100%;padding:11px;border:1px solid #444;
+border-radius:9px;background:#242424;color:#ddd;
+font-size:14px;cursor:pointer;
+}
+@media(max-width:700px){
+.custom-watermark{font-size:9px;top:60%;left:16%}
+.block-title{font-size:28px}
+.block-box{padding:25px}
+.block-sub{font-size:12px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="shaka-video-container shaka-mobile"
+     id="player-container" shaka-controls="true">
+  <video id="video" autoplay muted playsinline
+         preload="metadata" class="shaka-video"></video>
+  <div class="custom-watermark"></div>
+</div>
+
+<!-- Telegram Popup -->
+<div class="telegram-overlay" id="telegram-popup">
+  <div class="telegram-box">
+    <div class="telegram-icon">➤</div>
+    <h2>Join Our Telegram</h2>
+    <p>Join <strong>@cricmatchstream</strong> for updates and more links.</p>
+    <a class="telegram-btn"
+       href="https://t.me/cricmatchstream"
+       target="_blank" rel="noopener noreferrer">
+       JOIN TELEGRAM
+    </a>
+    <button class="telegram-close" id="close-popup">
+      Already Joined </button>
+  </div>
+</div>
+
 <script>
-<!-- code by https://www.html-code-generator.com -->
-document.write(unescape('%3C%21DOCTYPE%20html%3E%3Chtml%20lang%3D%22en%22%3E%3Chead%3E%3Cmeta%20charset%3D%22UTF-8%22%3E%3Cmeta%20name%3D%22viewport%22%20content%3D%22width%3Ddevice-width%2Cinitial-scale%3D1%22%3E%3Cmeta%20name%3D%22referrer%22%20content%3D%22no-referrer%22%3E%3Cmeta%20http-equiv%3D%22Cache-Control%22%20content%3D%22no-store%2C%20no-cache%2C%20must-revalidate%22%3E%3Cmeta%20http-equiv%3D%22Pragma%22%20content%3D%22no-cache%22%3E%3Cmeta%20http-equiv%3D%22Expires%22%20content%3D%220%22%3E%3Ctitle%3E@CRICMATCHSTREAM%3C/title%3E%3Clink%20href%3D%22https%3A//cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css%22%20rel%3D%22stylesheet%22%3E%3Cstyle%3Ehtml%2C%20body%20%7Bbox-sizing%3A%20border-box%3Bheight%3A%20100%25%3Bmargin%3A%200%3Bpadding%3A%200%3Boverflow%3A%20hidden%3Bwidth%3A%20100%25%3B%7D*%2C%20%3A%3Aafter%2C%20%3A%3Abefore%20%7Bbox-sizing%3A%20inherit%3B%7Dbody%20%7Bheight%3A%20100%25%3Bline-height%3A%201%3Bmargin%3A%200%3Boutline%3A%200%3Boverflow%3A%20hidden%3Bpadding%3A%2012px%3Bbackground%3A%20none%3B%7D.video-container%20%7Balign-items%3A%20center%3Bdisplay%3A%20flex%3Bheight%3A%20100%25%3Bjustify-content%3A%20center%3Bmargin-bottom%3A%200%3Boverflow%3A%20hidden%3Bpadding%3A%200%3Bposition%3A%20relative%3Bwidth%3A%20100%25%3Bbackground%3A%20none%3Bbox-shadow%3A%20none%3Bborder-radius%3A%200%3B%7D%23video%20%7Bposition%3A%20absolute%3Btop%3A%200%3Bleft%3A%200%3Bwidth%3A%20100%25%3Bheight%3A%20100%25%3Bobject-fit%3A%20contain%3Bborder-radius%3A%200%3B%7Dimg%20%7Bposition%3A%20absolute%3Btop%3A%2010px%3Bleft%3A%2015px%3Bheight%3A%20auto%3Bmax-width%3A%20115px%3Bwidth%3A%20100%25%3Bmax-height%3A%2025px%3Btransition%3A%20opacity%201s%20ease%3B%7D@media%20%28min-width%3A%201024px%29%20%7B.video-container%20%7Bheight%3A%2094vh%3B%7D%23video%20%7Bheight%3A%20100%25%3Bwidth%3A%20100%25%3Bobject-fit%3A%20fill%3B%7D%7D@media%20%28max-width%3A%201023px%29%20%7B.video-container%20%7Bpadding-bottom%3A%2056.25%25%3Bmin-height%3A%20100%25%3B%7D%23video%20%7Bobject-fit%3A%20contain%3B%7D%7D@media%20%28max-width%3A%20767px%29%20%7Bimg%20%7Bmax-width%3A%2090px%3Bmax-height%3A%2020px%3Bleft%3A%205px%3Btop%3A%205px%3B%7D.shaka-overlay%20.shaka-controls%20.shaka-control-button.shaka-button-overflow-menu%20%7Btransform%3A%20scale%280.7%29%3B%7D.shaka-overlay%20.shaka-controls%20%7Bpadding%3A%205px%3B%7D%7D@media%20%28orientation%3A%20landscape%29%20%7B.video-container%20%7Bheight%3A%20100vh%3Bpadding-bottom%3A%200%3B%7D%23video%20%7Bobject-fit%3A%20fill%3B%7D%7D.shaka-overflow-menu%2C%20.shaka-settings-menu%20%7Bbackground-color%3A%20rgba%28255%2C%200%2C%20120%2C%200.9%29%3B%7D.shaka-current-selection-span%2C%20.shaka-settings-menu%20button%20%7Bcolor%3A%20%230fc%3Bfont-weight%3A%20700%3B%7D.shaka-overflow-menu%20button%3Ahover%2C%20.shaka-settings-menu%20button%3Ahover%20%7Bbackground-color%3A%20%23000%3B%7D.shaka-overflow-button-label%20%7Bcolor%3A%20%23ffffe6%3Bfont-weight%3A%20700%3B%7D.material-icons-round%20%7Bcolor%3A%20%23e6e6e6%3B%7D.shaka-spinner-container%20%7Bdisplay%3A%20none%20%21important%3B%7D%3C/style%3E%3Cscript%20src%3D%22https%3A//cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js%22%20crossorigin%3D%22anonymous%22%20defer%3D%22defer%22%3E%3C/script%3E%3C/head%3E%3Cbody%3E%3Ccenter%3E%3Cdiv%20class%3D%22video-container%22%20data-shaka-player-container%3E%3Cvideo%20autoplay%20data-shaka-player%20id%3D%22video%22%20muted%20poster%3D%22https%3A//i.postimg.cc/QCytSSbY/20251010-100543.jpg%22%20preload%3D%22auto%22%3E%3C/video%3E%3C/div%3E%3C/center%3E%3Cscript%3Elet%20player%2Cui%3Basync%20function%20init%28%29%7Bconst%20e%3Ddocument.getElementById%28%22video%22%29%3Bui%3De.ui%3Bconst%20r%3Dui.getControls%28%29%3Bplayer%3Dr.getPlayer%28%29%2Cwindow.player%3Dplayer%2Cwindow.ui%3Dui%3Bui.configure%28%7BcontrolPanelElements%3A%5B%22play_pause%22%2C%22mute%22%2C%22volume%22%2C%22spacer%22%2C%22time_and_duration%22%2C%22picture_in_picture%22%2C%22fullscreen%22%2C%22overflow_menu%22%5D%2CvolumeBarColors%3A%7Bbase%3A%22rgba%28255%2C%200%2C%20150%2C%200.7%29%22%2Clevel%3A%22rgba%280%2C%20204%2C%20255%2C%200.7%29%22%7D%2CseekBarColors%3A%7Bbase%3A%22rgba%280%2C%20204%2C%20255%2C%200.7%29%22%2Cbuffered%3A%22rgba%28255%2C%200%2C%20150%2C%200.7%29%22%2Cplayed%3A%22rgba%280%2C%20204%2C%20255%2C%200.7%29%22%7D%7D%29%2Cplayer.configure%28%7Bdrm%3A%7BclearKeys%3A%7B%22a9fb7988fa5687d620e07587aed50f4a%22%3A%22ad2265ffa38ab51b0b4e1d14c9192ade%22%7D%7D%7D%29%2Cplayer.addEventListener%28%22error%22%2ConPlayerErrorEvent%29%2Cr.addEventListener%28%22error%22%2ConUIErrorEvent%29%3Btry%7Bawait%20player.load%28%22https%3A//otte.live.fly.ww.aiv-cdn.net/lhr-nitro/live/clients/dash/enc/otxvvjcsxz/out/v1/b0905b5731f249b1a5020054715fb462/cenc.mpd%22%29%7Dcatch%28e%29%7BonPlayerError%28e%29%7D%7Dfunction%20onPlayerErrorEvent%28e%29%7BonPlayerError%28e.detail%29%7Dfunction%20onPlayerError%28e%29%7B%7Dfunction%20onUIErrorEvent%28e%29%7BonPlayerError%28e.detail%29%7Ddocument.addEventListener%28%22shaka-ui-loaded%22%2Cinit%29%2Cdocument.addEventListener%28%22shaka-ui-load-failed%22%2C%28%28%29%3D%3E%7B%7D%29%29%3B%0Afunction%20welcome%28%29%20%7B%0A%20%20%20%20%20%20%20%20window.open%28%22https%3A//t.me/cricmatchstream%22%29%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20const%20message%20%3D%20%22JOIN%20OUR%20TELEGRAM%20CHANNEL%20FOR%20MORE%20LIVE%20STREAM%20LINKS%22%3B%0A%20%20%20%20%20%20%20%20if%20%28confirm%28message%29%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20window.location.href%20%3D%20%22https%3A//t.me/cricmatchstream%22%3B%0A%20%20%20%20%20%20%20%20%7D%0A%3C/script%3E%0A%3C/body%3E%0A%3C/html%3E'));
+(function(){
+
+function isSandboxedEnv(){
+  try{
+    if(window.self===window.top)return false;
+    if(window.frameElement&&window.frameElement.hasAttribute("sandbox"))return true;
+    try{document.domain=document.domain}
+    catch(e){return true}
+    return false;
+  }catch(e){return true}
+}
+
+function triggerBlockScreen(title,message){
+  const container=document.getElementById("player-container");
+  const video=document.getElementById("video");
+  try{video.pause();video.removeAttribute("src");video.load()}catch(e){}
+  const overlay=document.createElement("div");
+  overlay.className="block-overlay";
+  overlay.innerHTML=`<div class="block-box">
+    <div class="block-title">${title}</div>
+    <div class="block-sub">${message}</div>
+  </div>`;
+  document.body.appendChild(overlay);
+  container.style.display="none";
+}
+
+if(isSandboxedEnv()){
+  triggerBlockScreen("Disable Sandbox","Opening Chrome Browser Only & Disable Ad blocker");
+  return;
+}
+
+const CONFIG={
+  streamUrl:"https://jiotvmblive.cdn.jio.com/bpk-tv/Ten_3_MOB/WDVLive/index.mpd",
+  keyId:"68318f7c97c55ba6ab8d0398a88fed3e",
+  key:"d312fb3325b4eb9462b4a0d2b6794adf",
+  cookieUrl:"https://allrounder2-0.pages.dev/api/Sony-3.json"
+};
+
+document.addEventListener("DOMContentLoaded",async()=>{
+
+  // Show Telegram popup after 1.2 seconds
+  const popup=document.getElementById("telegram-popup");
+  const closeButton=document.getElementById("close-popup");
+
+  setTimeout(()=>popup.classList.add("show"),1200);
+
+  closeButton.addEventListener("click",()=>{
+    popup.classList.remove("show");
+  });
+
+  shaka.polyfill.installAll();
+  if(!shaka.Player.isBrowserSupported())return;
+
+  const video=document.getElementById("video");
+  const container=document.getElementById("player-container");
+  video.muted=true;
+
+  const player=new shaka.Player();
+  await player.attach(video);
+
+  const ui=new shaka.ui.Overlay(player,container,video);
+  ui.configure({
+    addBigPlayButton:true,
+    controlPanelElements:[
+      "mute","play_pause","time_and_duration","spacer",
+      "quality","picture_in_picture","fullscreen"
+    ],
+    seekBarColors:{
+      base:"white",
+      buffered:"red",
+      played:"green"
+    }
+  });
+
+  player.configure({
+    drm:{clearKeys:{[CONFIG.keyId]:CONFIG.key}},
+    manifest:{defaultPresentationDelay:5},
+    streaming:{
+      lowLatencyMode:true,
+      bufferingGoal:10,
+      rebufferingGoal:2,
+      safeSeekOffset:5
+    }
+  });
+
+  let cookieValue="";
+
+  try{
+    const response=await fetch(CONFIG.cookieUrl,{cache:"no-store"});
+    const data=await response.json();
+    cookieValue=data.cookie||"";
+  }catch(e){}
+
+  if(cookieValue){
+    player.getNetworkingEngine().registerRequestFilter((type,request)=>{
+      request.headers["Referer"]="https://www.jiotv.com/";
+      request.headers["User-Agent"]="plaYtv/7.1.5 (Linux;Android 13) ExoPlayerLib/2.11.6";
+      request.headers["Cookie"]=cookieValue;
+
+      let urlCookie=cookieValue.startsWith("__hdnea__=")
+        ?cookieValue.substring(10):cookieValue;
+
+      if(
+        (type===shaka.net.NetworkingEngine.RequestType.MANIFEST||
+         type===shaka.net.NetworkingEngine.RequestType.SEGMENT)&&
+        !request.uris[0].includes("__hdnea__")
+      ){
+        const sep=request.uris[0].includes("?")?"&":"?";
+        request.uris[0]+=sep+"__hdnea__="+urlCookie;
+      }
+    });
+  }
+
+  try{
+    await player.load(CONFIG.streamUrl);
+    video.play().catch(()=>{});
+  }catch(e){}
+
+  video.addEventListener("play",()=>{
+    video.muted=false;
+  });
+});
+})();
 </script>
+
+</body>
+</html>
